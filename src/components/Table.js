@@ -9,8 +9,8 @@ import Button from './Button'
 // const isSearched = (searchTerm) => item => {
 //   return item.title.toLowerCase().includes(searchTerm.toLowerCase())
 // }
-const isSearched = (searchTerm) => item => 
-   item.title.toLowerCase().includes(searchTerm.toLowerCase())
+// const isSearched = (searchTerm) => item => 
+//    item.title.toLowerCase().includes(searchTerm.toLowerCase())
 
 const Table = (props) => {
     const { list, onDismiss } = props;
