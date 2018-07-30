@@ -25,10 +25,13 @@ class App extends Component {
     super(props);
 
     this.state = {
-      result: null,
-      searchTerm: DEFAULT_QUERY,
+      results: null,
+      searchKey: '', //temporary searchKey which is used to store each result
+      searchTerm: DEFAULT_QUERY, //it gets changed every time the user types a different entry at search bar
+      error: null,
     }
 
+    this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
@@ -38,21 +41,35 @@ class App extends Component {
 
   componentDidMount(){
     const { searchTerm } = this.state;
+    this.setState({ searchKey: searchTerm, });
     this.fetchSearchTopStories(searchTerm);
+  }
+
+  needsToSearchTopStories(searchTerm) {
+    return !this.state.results[searchTerm] 
   }
 
   onSearchSubmit(event){
     const { searchTerm } = this.state;
-    this.fetchSearchTopStories(searchTerm);
+    this.setState({ searchKey: searchTerm, });
+
+    if(this.needsToSearchTopStories(searchTerm)){
+      this.fetchSearchTopStories(searchTerm); //fetches only if it needs to make an async request to API
+    }
+
     event.preventDefault(); //to avoid page reloads
   }
 
   setSearchTopStories(result){
     const { hits, page } = result;
+    const { searchKey, results} = this.state;
 
-    const oldHits = page !== 0
-      ? this.state.result.hits 
+    const oldHits = results && results[searchKey] 
+      ? results[searchKey].hits 
       : [];
+    // const oldHits = page !== 0
+    //   ? this.state.result.hits 
+    //   : [];
     
     const updatedHits = [
       ...oldHits,
@@ -60,9 +77,11 @@ class App extends Component {
     ]
 
     this.setState({
-      result: { //setting the merged hits and page in local component state
-        hits: updatedHits, 
-        page
+      results: { //setting the merged hits and page in local component state
+        ...results,
+        [searchKey]: { hits: updatedHits, page}
+        // hits: updatedHits, 
+        // page
       }
     })
   }
@@ -72,17 +91,21 @@ class App extends Component {
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`)
       .then(response => response.json())
       .then(result => this.setSearchTopStories(result))
-      .catch(error => error)
+      .catch(error => this.setState({ error }))
   }
   
   onDismiss(id){
+    const { searchKey, results } = this.state;
+    const { hits, page } = results[searchKey]
+
     const isNotId = item => item.objectID !== id;
-    const updatedHits = this.state.result.hits.filter(isNotId);
-    // this.setState({
-    //   result: Object.assign({}, this.state.result, { hits: updatedHits})
-    // })
-    this.setState({ //using the spread operator
-      result: {...this.state.result, hits: updatedHits }
+    const updatedHits = hits.filter(isNotId);
+
+    this.setState({
+      results: {
+        ...results,
+        [searchKey]: { hits: updatedHits, page },
+      }
     })
   }
 
@@ -94,8 +117,22 @@ class App extends Component {
 
 
   render() {
-    const { result, searchTerm } = this.state;
-    const page = (result && result.page) || 0; //defaulting it to zero, so on the first load it won't crash if you press the more button
+    const { results, searchKey, searchTerm, error } = this.state;
+    const page = (
+      results && //if exists
+      results[searchKey] && //if exists
+      results[searchKey].page //assign page number 
+    ) || 0; //defaulting it to zero, so on the first load it won't crash if you press the more button
+
+    const list = ( 
+      results && 
+      results[searchKey] &&
+      results[searchKey].hits //if above is true, assign hits to list
+    ) || []; //defaulting an empty list when there is no result by searchKey
+
+    // if(error){
+    //   return <p> Something went wrong </p>;
+    // }
 
     return (
       <div className="page">
@@ -108,13 +145,19 @@ class App extends Component {
             Search
           </Search>
         </div>
-        {result && //if it is not null, show table
-        <Table 
-          list={result.hits}
-          onDismiss={this.onDismiss}
-        />}
+  
+        { error 
+        ? <div className="interactions" >
+            <p> Something went wrong. </p>
+          </div>
+        : <Table 
+            list={list}
+            onDismiss={this.onDismiss}
+          />  
+        }
+        
         <div className="interactions" >
-          <Button onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}> 
+          <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}> 
             More
           </Button>
         </div>
