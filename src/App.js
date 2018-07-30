@@ -16,8 +16,18 @@ const PARAM_PAGE = 'page=';
 const PARAM_HPP = 'hitsPerPage=';
 
 const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}&${PARAM_PAGE}`;
-
 console.log(url)
+
+const Loading = () => 
+  <div> Loading... </div>
+
+//HoC -> https://www.robinwieruch.de/gentle-introduction-higher-order-components/
+const withLoading = (Component) => ({ isLoading, ...rest}) =>
+  isLoading
+  ? <Loading />
+  : <Component {...rest} />
+
+const ButtonWithLoading = withLoading(Button) //wrapping the Button component into a HoC
 
 class App extends Component {
   _isMounted = false; //workaround to avoid calling setState on an unmounted component
@@ -30,6 +40,7 @@ class App extends Component {
       searchKey: '', //temporary searchKey which is used to store each result
       searchTerm: DEFAULT_QUERY, //it gets changed every time the user types a different entry at search bar
       error: null,
+      isLoading: false,
     }
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -86,7 +97,8 @@ class App extends Component {
     this.setState({
       results: { //setting the merged hits and page in local component state
         ...results,
-        [searchKey]: { hits: updatedHits, page}
+        [searchKey]: { hits: updatedHits, page},
+        isLoading: false,
         // hits: updatedHits, 
         // page
       }
@@ -94,6 +106,9 @@ class App extends Component {
   }
 
   fetchSearchTopStories(searchTerm, page = 0){ //if don't provide a page, it'll fallback to the initial one
+    this.setState({
+      isLoading: true,
+    })
     // fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`)
     axios.get(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`)
       // .then(response => response.json())
@@ -124,7 +139,7 @@ class App extends Component {
 
 
   render() {
-    const { results, searchKey, searchTerm, error } = this.state;
+    const { results, searchKey, searchTerm, error, isLoading } = this.state;
     const page = (
       results && //if exists
       results[searchKey] && //if exists
@@ -164,9 +179,18 @@ class App extends Component {
         }
         
         <div className="interactions" >
-          <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}> 
+        <ButtonWithLoading 
+          isLoading={isLoading}
+          onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
+        >
+          More
+        </ButtonWithLoading>
+        {/* { isLoading
+        ? <Loading />
+        : <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}> 
             More
           </Button>
+        } */}
         </div>
       </div>
     );
