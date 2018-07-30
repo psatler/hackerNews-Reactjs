@@ -174,3 +174,9 @@ class App extends Component {
 }
 
 export default App;
+
+export { //exporting for testing purposes
+  Button,
+  Search,
+  Table,
+};
