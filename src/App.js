@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios'
+import { sortBy } from 'lodash'
 import './App.css';
 
 import Search from './components/Search'
@@ -14,6 +15,14 @@ const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
 const PARAM_PAGE = 'page=';
 const PARAM_HPP = 'hitsPerPage=';
+
+export const SORTS = { //different types of sorts, by title, author, etc
+  NONE: list => list,
+  TITLE: list => sortBy(list, 'title'),
+  AUTHOR: list => sortBy(list, 'author'),
+  COMMENTS: list => sortBy(list, 'num_comments').reverse(),
+  POINTS: list => sortBy(list, 'points').reverse(),
+}
 
 const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}&${PARAM_PAGE}`;
 console.log(url)
@@ -41,6 +50,7 @@ class App extends Component {
       searchTerm: DEFAULT_QUERY, //it gets changed every time the user types a different entry at search bar
       error: null,
       isLoading: false,
+      sortKey: 'NONE',
     }
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -49,6 +59,7 @@ class App extends Component {
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
+    this.onSort = this.onSort.bind(this);
   }
 
   componentDidMount(){
@@ -61,6 +72,12 @@ class App extends Component {
 
   componentWillUnmount(){
     this._isMounted = false;
+  }
+
+  onSort(sortKey){
+    this.setState({
+      sortKey,
+    })
   }
 
   needsToSearchTopStories(searchTerm) {
@@ -139,7 +156,7 @@ class App extends Component {
 
 
   render() {
-    const { results, searchKey, searchTerm, error, isLoading } = this.state;
+    const { results, searchKey, searchTerm, error, isLoading, sortKey } = this.state;
     const page = (
       results && //if exists
       results[searchKey] && //if exists
@@ -170,10 +187,12 @@ class App extends Component {
   
         { error 
         ? <div className="interactions" >
-            <p> Something went wrong. </p>
+            <p> Something went wrong. Reload and try searching again </p>
           </div>
         : <Table 
             list={list}
+            sortKey={sortKey}
+            onSort={this.onSort}
             onDismiss={this.onDismiss}
           />  
         }
