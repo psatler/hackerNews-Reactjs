@@ -12,23 +12,25 @@ import {
 
 import Search from '../Search'
 import Table from '../Table'
-import Button from '../Button';
+import { Button } from '../Button' ;
+
+const Loading = () => 
+    <div> Loading... </div>
+
+//HoC -> https://www.robinwieruch.de/gentle-introduction-higher-order-components/
+const withLoading = (Component) => ({ isLoading, ...rest}) =>
+isLoading
+? <Loading />
+: <Component {...rest} />
+
+const ButtonWithLoading = withLoading(Button) //wrapping the Button component into a HoC
 
 
 
 const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}&${PARAM_PAGE}`;
 console.log(url)
 
-const Loading = () => 
-  <div> Loading... </div>
 
-//HoC -> https://www.robinwieruch.de/gentle-introduction-higher-order-components/
-const withLoading = (Component) => ({ isLoading, ...rest}) =>
-  isLoading
-  ? <Loading />
-  : <Component {...rest} />
-
-const ButtonWithLoading = withLoading(Button) //wrapping the Button component into a HoC
 
 //####
 const updateSearchTopStoriesState = (hits, page) => (prevState) => {
