@@ -11,7 +11,7 @@ import {
 } from '../../constants'
 
 import { Search } from '../Search'
-import Table from '../Table'
+import { Table } from '../Table'
 import { Button } from '../Button' ;
 
 
