@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Button } from '../Button'
-import Sort from '../Sort'
+import { Sort } from '../Sort'
 import PropTypes from 'prop-types'
 import { SORTS } from '../../constants'
 

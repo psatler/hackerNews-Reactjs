@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from './Button'
+import { Button } from '../Button'
 import classNames from 'classnames'
 
 const Sort = ({ sortKey, activeSortKey, onSort, children }) => {
