@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios'
-import './App.css';
+import './index.css' ;
 
 import {
   DEFAULT_QUERY,
@@ -8,29 +8,13 @@ import {
   PATH_SEARCH,
   PARAM_SEARCH,
   PARAM_PAGE,
-} from './constants'
+} from '../../constants'
 
-import Search from './components/Search'
-import Table from './components/Table'
-import Button from './components/Button';
+import Search from '../Search'
+import Table from '../Table'
+import Button from '../Button';
 
 
-// const DEFAULT_QUERY = 'redux'
-// const DEFAULT_HPP = '100' //default hits per page
-
-// const PATH_BASE = 'https://hn.algolia.com/api/v1';
-// const PATH_SEARCH = '/search';
-// const PARAM_SEARCH = 'query=';
-// const PARAM_PAGE = 'page=';
-// const PARAM_HPP = 'hitsPerPage=';
-
-// export const SORTS = { //different types of sorts, by title, author, etc
-//   NONE: list => list,
-//   TITLE: list => sortBy(list, 'title'),
-//   AUTHOR: list => sortBy(list, 'author'),
-//   COMMENTS: list => sortBy(list, 'num_comments').reverse(),
-//   POINTS: list => sortBy(list, 'points').reverse(),
-// }
 
 const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}&${PARAM_PAGE}`;
 console.log(url)
