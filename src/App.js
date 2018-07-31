@@ -51,6 +51,7 @@ class App extends Component {
       error: null,
       isLoading: false,
       sortKey: 'NONE',
+      isSortReverse: false, //used to reverse a sorting choice, returning to the original sorting
     }
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -75,8 +76,10 @@ class App extends Component {
   }
 
   onSort(sortKey){
+    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse; //if you clicked twice on the same column, and then, revert isSortReverse value. If is not the same column, it won't reverse. 
     this.setState({
       sortKey,
+      isSortReverse,
     })
   }
 
@@ -156,7 +159,16 @@ class App extends Component {
 
 
   render() {
-    const { results, searchKey, searchTerm, error, isLoading, sortKey } = this.state;
+    const { 
+      results, 
+      searchKey, 
+      searchTerm, 
+      error, 
+      isLoading, 
+      sortKey, 
+      isSortReverse 
+    } = this.state;
+
     const page = (
       results && //if exists
       results[searchKey] && //if exists
@@ -191,6 +203,7 @@ class App extends Component {
           </div>
         : <Table 
             list={list}
+            isSortReverse={isSortReverse}
             sortKey={sortKey}
             onSort={this.onSort}
             onDismiss={this.onDismiss}

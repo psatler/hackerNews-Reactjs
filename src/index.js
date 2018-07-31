@@ -7,6 +7,6 @@ import registerServiceWorker from './registerServiceWorker';
 ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();
 
-if(module.hot){ //to avoid page refreshes after code modifications
-    module.hot.accept();
-}
+// if(module.hot){ //to avoid page refreshes after code modifications
+//     module.hot.accept();
+// }

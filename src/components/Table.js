@@ -6,7 +6,11 @@ import { SORTS } from '../App'
 
 
 const Table = (props) => {
-    const { list, onDismiss, sortKey, onSort } = props;
+    const { list, onDismiss, sortKey, onSort, isSortReverse } = props;
+    const sortedList = SORTS[sortKey](list);
+    const reverseSortedList = isSortReverse
+        ?   sortedList.reverse()
+        :   sortedList;
 
     return (
         <div className="table">
@@ -15,6 +19,7 @@ const Table = (props) => {
                     <Sort 
                         sortKey={'TITLE'}
                         onSort={onSort}
+                        activeSortKey={sortKey}
                     >
                         Title
                     </Sort>
@@ -23,6 +28,7 @@ const Table = (props) => {
                     <Sort 
                         sortKey={'AUTHOR'}
                         onSort={onSort}
+                        activeSortKey={sortKey}
                     >
                         Author
                     </Sort>
@@ -31,6 +37,7 @@ const Table = (props) => {
                     <Sort
                         sortKey={'COMMENTS'}
                         onSort={onSort}
+                        activeSortKey={sortKey}
                     >
                         Comments
                     </Sort>
@@ -39,6 +46,7 @@ const Table = (props) => {
                     <Sort
                         sortKey={'POINTS'}
                         onSort={onSort}
+                        activeSortKey={sortKey}
                     >
                         Points
                     </Sort>
@@ -48,7 +56,7 @@ const Table = (props) => {
                 </span>
             </div>
 
-            {SORTS[sortKey](list).map( item => 
+            {reverseSortedList.map( item => 
             <div key={item.objectID} className="table-row" >
                 <span style={{width: '40%'}} >
                     <a href={item.url}>{item.title}</a>
