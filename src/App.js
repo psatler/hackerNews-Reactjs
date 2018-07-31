@@ -38,6 +38,28 @@ const withLoading = (Component) => ({ isLoading, ...rest}) =>
 
 const ButtonWithLoading = withLoading(Button) //wrapping the Button component into a HoC
 
+//####
+const updateSearchTopStoriesState = (hits, page) => (prevState) => {
+    const { searchKey, results} = prevState;//updating values based on previous state
+
+    const oldHits = results && results[searchKey] 
+      ? results[searchKey].hits 
+      : [];
+    
+    const updatedHits = [
+      ...oldHits,
+      ...hits,
+    ]
+
+    return {
+      results: { //setting the merged hits and page in local component state
+        ...results,
+        [searchKey]: { hits: updatedHits, page},
+        isLoading: false,
+      }
+    }
+}
+
 class App extends Component {
   _isMounted = false; //workaround to avoid calling setState on an unmounted component
 
@@ -50,8 +72,6 @@ class App extends Component {
       searchTerm: DEFAULT_QUERY, //it gets changed every time the user types a different entry at search bar
       error: null,
       isLoading: false,
-      sortKey: 'NONE',
-      isSortReverse: false, //used to reverse a sorting choice, returning to the original sorting
     }
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -60,7 +80,7 @@ class App extends Component {
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
-    this.onSort = this.onSort.bind(this);
+    
   }
 
   componentDidMount(){
@@ -73,14 +93,6 @@ class App extends Component {
 
   componentWillUnmount(){
     this._isMounted = false;
-  }
-
-  onSort(sortKey){
-    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse; //if you clicked twice on the same column, and then, revert isSortReverse value. If is not the same column, it won't reverse. 
-    this.setState({
-      sortKey,
-      isSortReverse,
-    })
   }
 
   needsToSearchTopStories(searchTerm) {
@@ -100,29 +112,7 @@ class App extends Component {
 
   setSearchTopStories(result){
     const { hits, page } = result;
-    const { searchKey, results} = this.state;
-
-    const oldHits = results && results[searchKey] 
-      ? results[searchKey].hits 
-      : [];
-    // const oldHits = page !== 0
-    //   ? this.state.result.hits 
-    //   : [];
-    
-    const updatedHits = [
-      ...oldHits,
-      ...hits,
-    ]
-
-    this.setState({
-      results: { //setting the merged hits and page in local component state
-        ...results,
-        [searchKey]: { hits: updatedHits, page},
-        isLoading: false,
-        // hits: updatedHits, 
-        // page
-      }
-    })
+    this.setState(updateSearchTopStoriesState(hits, page));
   }
 
   fetchSearchTopStories(searchTerm, page = 0){ //if don't provide a page, it'll fallback to the initial one
@@ -203,9 +193,6 @@ class App extends Component {
           </div>
         : <Table 
             list={list}
-            isSortReverse={isSortReverse}
-            sortKey={sortKey}
-            onSort={this.onSort}
             onDismiss={this.onDismiss}
           />  
         }
