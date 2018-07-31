@@ -10,10 +10,12 @@ import {
   PARAM_PAGE,
 } from '../../constants'
 
-import Search from '../Search'
+import { Search } from '../Search'
 import Table from '../Table'
 import { Button } from '../Button' ;
 
+
+//###############################################################
 const Loading = () => 
     <div> Loading... </div>
 
@@ -24,6 +26,7 @@ isLoading
 : <Component {...rest} />
 
 const ButtonWithLoading = withLoading(Button) //wrapping the Button component into a HoC
+//###############################################################
 
 
 
