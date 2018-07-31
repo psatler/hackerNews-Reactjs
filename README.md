@@ -4,7 +4,7 @@
 
 This is a plain react js app making use of the Hacker News API for practicing. 
 
-It has a cache feature, so if the user repeat a request, the app will not hit the API again for searching. Also, the user can sort the posts clicking on the columns, being able to reverse the sorting if they click on the same column again. Moreover, the code leverage some concepts like Higher Order functions to make it more reusable and maintainable. 
+It has a cache feature, so if the user repeat a request, the app will not hit the API again for searching. Also, the user can sort the posts clicking on the columns, being able to reverse the sorting if they click on the same column again. And can search for more results of the same request, clicking at the "More" button, located at the bottom of the page. Moreover, the code leverage some concepts like Higher Order functions to make it more reusable and maintainable. 
 
 
 
