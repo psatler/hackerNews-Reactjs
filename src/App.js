@@ -55,7 +55,6 @@ const updateSearchTopStoriesState = (hits, page) => (prevState) => {
       results: { //setting the merged hits and page in local component state
         ...results,
         [searchKey]: { hits: updatedHits, page},
-        isLoading: false,
       }
     }
 }
@@ -113,6 +112,7 @@ class App extends Component {
   setSearchTopStories(result){
     const { hits, page } = result;
     this.setState(updateSearchTopStoriesState(hits, page));
+    this.setState({ isLoading: false})
   }
 
   fetchSearchTopStories(searchTerm, page = 0){ //if don't provide a page, it'll fallback to the initial one
@@ -156,6 +156,8 @@ class App extends Component {
       error, 
       isLoading, 
     } = this.state;
+
+    console.log('isLoading', isLoading);
 
     const page = (
       results && //if exists
